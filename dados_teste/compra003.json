@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "8125830A-DA6C-8D84-1B69-39C8551AD8DE",
+  "compra": {
+	"codigo_passagem": 7965,
+	"nro_cartao": "491 77649 71875 433",
+	"codigo_seguranca_cartao": 251,
+	"valor_passagem": "R$63,44",
+	"data_viagem": [
+	  2021,
+	  10,
+	  6
+	]
+  }
+},
+"mensagem": "KAY23JOR9XJ",
+"pagamento_ok": true
+}

@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "74C2615A-3450-06D2-5586-F5DCE9005CF2",
+  "compra": {
+	"codigo_passagem": 7842,
+	"nro_cartao": "675974 53 5755 1697 761",
+	"codigo_seguranca_cartao": 977,
+	"valor_passagem": "R$22,00",
+	"data_viagem": [
+	  2022,
+	  10,
+	  21
+	]
+  }
+},
+"mensagem": "XHM86LLN6CS",
+"pagamento_ok": true
+}

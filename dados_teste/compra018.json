@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "B1CDB78E-4ABC-B4AA-FF68-F8FBA3E2665C",
+  "compra": {
+	"codigo_passagem": 2664,
+	"nro_cartao": "644 64164 74633 831",
+	"codigo_seguranca_cartao": 463,
+	"valor_passagem": "R$6,16",
+	"data_viagem": [
+	  2021,
+	  9,
+	  3
+	]
+  }
+},
+"mensagem": "HKU25PTF6KM",
+"pagamento_ok": false
+}

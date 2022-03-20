@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "9DAD1995-475F-9566-8129-687D6A194F79",
+  "compra": {
+	"codigo_passagem": 5214,
+	"nro_cartao": "4936771186667185358",
+	"codigo_seguranca_cartao": 836,
+	"valor_passagem": "R$96,52",
+	"data_viagem": [
+	  2021,
+	  11,
+	  12
+	]
+  }
+},
+"mensagem": "JUV29OPL0JC",
+"pagamento_ok": false
+}

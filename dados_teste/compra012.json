@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "7BFB6389-348E-D188-51E6-79C4E48E376E",
+  "compra": {
+	"codigo_passagem": 7072,
+	"nro_cartao": "2014 553766 56760",
+	"codigo_seguranca_cartao": 349,
+	"valor_passagem": "R$52,65",
+	"data_viagem": [
+	  2021,
+	  4,
+	  4
+	]
+  }
+},
+"mensagem": "HLW72KBF3AQ",
+"pagamento_ok": false
+}

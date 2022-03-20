@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "AF7F5250-BBB5-B13C-3916-760CB2777E17",
+  "compra": {
+	"codigo_passagem": 7047,
+	"nro_cartao": "6304865231176556893",
+	"codigo_seguranca_cartao": 863,
+	"valor_passagem": "R$9,67",
+	"data_viagem": [
+	  2021,
+	  12,
+	  16
+	]
+  }
+},
+"mensagem": "LVX59VXH2ZU",
+"pagamento_ok": true
+}

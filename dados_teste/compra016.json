@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "B906AD34-2F83-AC14-A42A-16B4A2B95E30",
+  "compra": {
+	"codigo_passagem": 2793,
+	"nro_cartao": "546142 332286 8478",
+	"codigo_seguranca_cartao": 990,
+	"valor_passagem": "R$42,46",
+	"data_viagem": [
+	  2021,
+	  8,
+	  10
+	]
+  }
+},
+"mensagem": "MRH67FSM8IZ",
+"pagamento_ok": false
+}

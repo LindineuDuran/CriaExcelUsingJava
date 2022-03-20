@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "DBA18CD0-A11A-5E7D-D64E-6601093D4C17",
+  "compra": {
+	"codigo_passagem": 6840,
+	"nro_cartao": "6334238874556822539",
+	"codigo_seguranca_cartao": 280,
+	"valor_passagem": "R$23,93",
+	"data_viagem": [
+	  2023,
+	  1,
+	  24
+	]
+  }
+},
+"mensagem": "PWQ91LKG2UC",
+"pagamento_ok": false
+}

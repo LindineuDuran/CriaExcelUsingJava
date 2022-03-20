@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "8A32AEB1-76E9-2953-889E-50BCBCB49862",
+  "compra": {
+	"codigo_passagem": 3771,
+	"nro_cartao": "514882 376955 3353",
+	"codigo_seguranca_cartao": 716,
+	"valor_passagem": "R$4,79",
+	"data_viagem": [
+	  2022,
+	  12,
+	  16
+	]
+  }
+},
+"mensagem": "MFW47CTP6UI",
+"pagamento_ok": false
+}

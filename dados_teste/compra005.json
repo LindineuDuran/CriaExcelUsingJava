@@ -1,0 +1,18 @@
+{
+"compra_chave": {
+  "chave": "BEF84A2C-1B52-A1EF-1CC2-BA154DCEDDAE",
+  "compra": {
+	"codigo_passagem": 3869,
+	"nro_cartao": "4913 1614 2742 4854",
+	"codigo_seguranca_cartao": 879,
+	"valor_passagem": "R$14,94",
+	"data_viagem": [
+	  2022,
+	  10,
+	  15
+	]
+  }
+},
+"mensagem": "SES32MQC2BR",
+"pagamento_ok": false
+}
