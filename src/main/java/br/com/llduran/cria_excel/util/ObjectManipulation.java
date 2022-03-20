@@ -23,9 +23,9 @@ public class ObjectManipulation
 		Object meuobjeto = MinhaClasse.getConstructor().newInstance();
 
 		ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-		Object boleta = (Object) mapper.readValue(json, meuobjeto.getClass());
+		Object objeto = (Object) mapper.readValue(json, meuobjeto.getClass());
 
-		return boleta;
+		return objeto;
 	}
 
 	public Object toDto(Object obj, String packageName, String className)

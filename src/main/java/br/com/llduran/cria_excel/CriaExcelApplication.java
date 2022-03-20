@@ -1,9 +1,11 @@
 package br.com.llduran.cria_excel;
 
 import br.com.llduran.cria_excel.exception.NegocioException;
-import br.com.llduran.cria_excel.model.CompraFinalizadaDTO;
 import br.com.llduran.cria_excel.model.Filme;
 import br.com.llduran.cria_excel.model.Pessoa;
+import br.com.llduran.cria_excel.service.CompraFinalizadaService;
+import br.com.llduran.cria_excel.service.FilmeService;
+import br.com.llduran.cria_excel.service.PessoaService;
 import br.com.llduran.cria_excel.util.ExcelManager;
 import br.com.llduran.cria_excel.util.IoUtils;
 import br.com.llduran.cria_excel.util.ObjectManipulation;
@@ -32,6 +34,15 @@ public class CriaExcelApplication implements CommandLineRunner
 	@Autowired
 	private ExcelManager excelManager;
 
+	@Autowired
+	private CompraFinalizadaService compraFinalizadaService;
+
+	@Autowired
+	private FilmeService filmeService;
+
+	@Autowired
+	private PessoaService pessoaService;
+
 	public static void main(String[] args)
 	{
 		SpringApplication.run(CriaExcelApplication.class, args);
@@ -52,176 +63,23 @@ public class CriaExcelApplication implements CommandLineRunner
 				.collect(Collectors.toList());
 
 		// Processa arquivos de Compras Finalizadas
-		excelFiles[0] = processaComprasFinalizadas(excelFiles[0], arquivosCompra);
+		excelFiles[0] = compraFinalizadaService.processaListaArquivos(excelFiles[0], arquivosCompra);
 
 		// Filtra arquivos de Filme
 		List<File> arquivosFilme = arquivos.stream().filter(a -> a.getName().contains("filme"))
 				.collect(Collectors.toList());
 
 		// Processa arquivos de filmes
-		excelFiles[0] = processaFilmes(excelFiles[0], arquivosFilme);
+		excelFiles[0] = filmeService.processaListaArquivos(excelFiles[0], arquivosFilme);
 
 		// Filtra arquivos de Pessoa
 		List<File> arquivosPessoa = arquivos.stream().filter(a -> a.getName().contains("pessoa"))
 				.collect(Collectors.toList());
 
 		// Processa arquivos de pessoa
-		excelFiles[0] = processaPessoas(excelFiles[0], arquivosPessoa);
+		excelFiles[0] = pessoaService.processaListaArquivos(excelFiles[0], arquivosPessoa);
 
 		// Salva arquivo Excel
-		SalvaPlanilha(excelFiles[0]);
-	}
-
-	private Object leArquivosJson(String filePath, String packageclasse, String nomeClasse, boolean temDTO)
-	{
-		try
-		{
-			// Ler arquivo Json
-			String jsoncontent = ioUtils.readFile(filePath);
-
-			// Desserializa JSON em objeto conforme o nomeClasse fornecido
-			Object objeto = objectManipulation.desserializa(jsoncontent, packageclasse, nomeClasse.replace("DTO", ""));
-
-			if (temDTO)
-			{
-				// Converte objeto em objeto DTO
-				Object objetoDTO = objectManipulation.toDto(objeto, packageclasse, nomeClasse);
-				return objetoDTO;
-			}
-			else
-			{
-				return objeto;
-			}
-		}
-		catch (IOException e)
-		{
-			throw new NegocioException("Erro ao ler arquivo json!", e);
-		}
-		catch (ClassNotFoundException e)
-		{
-			throw new NegocioException("Classe não encontrada!", e);
-		}
-		catch (NoSuchMethodException e)
-		{
-			throw new NegocioException("Método não encontrado!", e);
-		}
-		catch (InvocationTargetException e)
-		{
-			throw new NegocioException("Não foi possivel construir o objeto de destino!", e);
-		}
-		catch (InstantiationException e)
-		{
-			throw new NegocioException("Não foi possivel instanciar a classe!", e);
-		}
-		catch (IllegalAccessException e)
-		{
-			throw new NegocioException("Acesso ilegal utilizando reflection!", e);
-		}
-		catch (NoSuchFieldException e)
-		{
-			throw new NegocioException("Campo ndo encontrado na classel", e);
-		}
-	}
-
-	private void SalvaPlanilha(XSSFWorkbook excelFile)
-	{
-		String nomeArquivoExcel = ioUtils.getTargetFolder() + "\\ExcelTeste.xlsx";
-		ioUtils.salvaExcelLocal(excelFile, nomeArquivoExcel);
-	}
-
-	private XSSFWorkbook processaComprasFinalizadas(XSSFWorkbook excelFile, List<File> arquivosCompra)
-			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException,
-			ClassNotFoundException
-	{
-		// Cria arquivo Excel Temporário
-		XSSFWorkbook[] excelFiles = new XSSFWorkbook[1];
-		excelFiles[0] = excelFile;
-
-		// Transforma arquivos JSON em objetos CompraDTO
-		List<CompraFinalizadaDTO> compraFinalizadaDTOS = new ArrayList<>();
-		arquivosCompra.forEach(a -> {
-			CompraFinalizadaDTO compraDTO = (CompraFinalizadaDTO) leArquivosJson(a.getAbsolutePath(),
-					                             "br.com.llduran.cria_excel.model",
-					                              "CompraFinalizadaDTO",
-					                                true);
-			compraFinalizadaDTOS.add(compraDTO);
-		});
-
-		// Cria planilha Excel com linha de cabeçalho para CompraFinalizadaDTO
-		excelFiles[0] = excelManager.CriaPlanilhaCabecalho(excelFiles[0],
-				                               "br.com.llduran.cria_excel.model",
-				                                "CompraFinalizadaDTO");
-
-		// Consome dados da lista de Compras Finalizadas
-		compraFinalizadaDTOS.forEach(c -> {
-			// Insere linha na planilha à partir de dados do JSON lido
-			excelFiles[0] = excelManager.writeDataLine(excelFiles[0], c);
-		});
-
-		return excelFiles[0];
-	}
-
-	private XSSFWorkbook processaFilmes(XSSFWorkbook excelFile, List<File> arquivosFilme)
-			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException,
-			ClassNotFoundException
-	{
-		// Cria arquivo Excel Temporário
-		XSSFWorkbook[] excelFiles = new XSSFWorkbook[1];
-		excelFiles[0] = excelFile;
-
-		// Transforma arquivos JSON em objetos Filme
-		List<Filme> filmes = new ArrayList<>();
-		arquivosFilme.forEach(a -> {
-			Filme filme = (Filme) leArquivosJson(a.getAbsolutePath(),
-					                             "br.com.llduran.cria_excel.model",
-					                              "Filme",
-					                                false);
-			filmes.add(filme);
-		});
-
-		// Cria planilha Excel com linha de cabeçalho para Filme
-		excelFiles[0] = excelManager.CriaPlanilhaCabecalho(excelFiles[0],
-				                               "br.com.llduran.cria_excel.model",
-				                                "Filme");
-
-		// Consome dados da lista de Filmes
-		filmes.forEach(c -> {
-			// Insere linha na planilha à partir de dados do JSON lido
-			excelFiles[0] = excelManager.writeDataLine(excelFiles[0], c);
-		});
-
-		return excelFiles[0];
-	}
-
-	private XSSFWorkbook processaPessoas(XSSFWorkbook excelFile, List<File> arquivosPessoa)
-			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException,
-			ClassNotFoundException
-	{
-		// Cria arquivo Excel Temporário
-		XSSFWorkbook[] excelFiles = new XSSFWorkbook[1];
-		excelFiles[0] = excelFile;
-
-		// Transforma arquivos JSON em objetos Filme
-		List<Pessoa> pessoas = new ArrayList<>();
-		arquivosPessoa.forEach(a -> {
-			Pessoa pessoa = (Pessoa) leArquivosJson(a.getAbsolutePath(),
-					"br.com.llduran.cria_excel.model",
-					"Pessoa",
-					false);
-			pessoas.add(pessoa);
-		});
-
-		// Cria planilha Excel com linha de cabeçalho para Filme
-		excelFiles[0] = excelManager.CriaPlanilhaCabecalho(excelFiles[0],
-				"br.com.llduran.cria_excel.model",
-				"Pessoa");
-
-		// Consome dados da lista de Pessoa
-		pessoas.forEach(c -> {
-			// Insere linha na planilha à partir de dados do JSON lido
-			excelFiles[0] = excelManager.writeDataLine(excelFiles[0], c);
-		});
-
-		return excelFiles[0];
+		ioUtils.salvaExcelLocal(excelFiles[0], "ExcelTeste.xlsx");
 	}
 }
