@@ -1,14 +1,10 @@
 package br.com.llduran.cria_excel;
 
-import br.com.llduran.cria_excel.exception.NegocioException;
-import br.com.llduran.cria_excel.model.Filme;
-import br.com.llduran.cria_excel.model.Pessoa;
 import br.com.llduran.cria_excel.service.CompraFinalizadaService;
 import br.com.llduran.cria_excel.service.FilmeService;
 import br.com.llduran.cria_excel.service.PessoaService;
 import br.com.llduran.cria_excel.util.ExcelManager;
 import br.com.llduran.cria_excel.util.IoUtils;
-import br.com.llduran.cria_excel.util.ObjectManipulation;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -16,9 +12,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,9 +20,6 @@ public class CriaExcelApplication implements CommandLineRunner
 {
 	@Autowired
 	private IoUtils ioUtils;
-
-	@Autowired
-	private ObjectManipulation objectManipulation;
 
 	@Autowired
 	private ExcelManager excelManager;

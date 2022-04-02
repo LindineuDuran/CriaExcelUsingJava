@@ -1,6 +1,5 @@
 package br.com.llduran.cria_excel.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.stream.Stream;
@@ -9,13 +8,13 @@ import java.util.stream.Stream;
 public enum HeaderEnum
 {
 	chave("Chave"),
-	codigoPassagem("Código da Passagem"),
-	nroCartao("Número do Cartão"),
-	codigoSegurancaCartao("Código de Segurança do Cartão"),
-	valorPassagem("Valor da Passagem"),
-	dataViagem("Data da Viagem"),
-	mensagem("Mensagem"),
-	pagamentoOK("Pagamento Realizado"),
+	compraCodigoPassagem("Código da Passagem"),
+	compraNroCartao("Número do Cartão"),
+	compraCodigoSegurancaCartao("Código de Segurança do Cartão"),
+	compraValorPassagem("Valor da Passagem"),
+	compraDataViagem("Data da Viagem"),
+	compraMensagem("Mensagem"),
+	compraPagamentoOK("Pagamento Realizado"),
 	id("Id"),
 	titulo("Título"),
 	descricao("Descrição"),
