@@ -31,8 +31,12 @@ public class IoUtils
 	@Value("${llduran.storage.target-folder}")
 	private String targetFolder;
 
-	@Autowired
 	private ObjectManipulation objectManipulation;
+
+	public IoUtils()
+	{
+		this.objectManipulation = new ObjectManipulation();
+	}
 
 	public String getSourceFolder()
 	{

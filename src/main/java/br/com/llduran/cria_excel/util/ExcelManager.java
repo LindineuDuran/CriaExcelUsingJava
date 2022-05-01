@@ -4,6 +4,7 @@ import br.com.llduran.cria_excel.exception.NegocioException;
 import br.com.llduran.cria_excel.model.HeaderEnum;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -15,14 +16,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
-public class ExcelManager
+@Component public class ExcelManager
 {
 	public XSSFWorkbook createExcelFile()
 	{
@@ -30,10 +33,21 @@ public class ExcelManager
 		return excelFile;
 	}
 
+	public boolean hasSheets(XSSFWorkbook excelFile)
+	{
+		boolean exists = false;
+		List<CTSheet> ctSheetArray = getSheetList(excelFile);
+		if (ctSheetArray.stream().count() > 0)
+		{
+			exists = true;
+		}
+		return exists;
+	}
+
 	public boolean sheetExists(XSSFWorkbook excelFile, String sheetname)
 	{
 		boolean exists = false;
-		List<CTSheet> ctSheetArray = excelFile.getCTWorkbook().getSheets().getSheetList();
+		List<CTSheet> ctSheetArray = getSheetList(excelFile);
 		if (ctSheetArray.stream().filter(sheet -> sheet.getName().equals(sheetname)).count() > 0)
 		{
 			exists = true;
@@ -52,6 +66,11 @@ public class ExcelManager
 		return excelFile;
 	}
 
+	private List<CTSheet> getSheetList(XSSFWorkbook excelFile)
+	{
+		return excelFile.getCTWorkbook().getSheets().getSheetList();
+	}
+
 	private CellStyle createHeaderStyle(XSSFWorkbook excelFile)
 	{
 		CellStyle style = excelFile.createCellStyle();
@@ -62,7 +81,7 @@ public class ExcelManager
 		return style;
 	}
 
-	private CellStyle createDataStyle (XSSFWorkbook excelFile)
+	private CellStyle createDataStyle(XSSFWorkbook excelFile)
 	{
 		CellStyle style = excelFile.createCellStyle();
 		XSSFFont font = excelFile.createFont();
@@ -72,7 +91,18 @@ public class ExcelManager
 		return style;
 	}
 
-	private void createCell(Row row, int columnCount, Object value, CellStyle style)
+	private CellStyle createCalendarStyle(XSSFWorkbook excelFile)
+	{
+		CellStyle style = excelFile.createCellStyle();
+		CreationHelper createHelper = excelFile.getCreationHelper();
+		XSSFFont font = excelFile.createFont();
+		font.setFontHeight(10);
+		style.setDataFormat(createHelper.createDataFormat().getFormat("dd/mm/yyyy"));
+		style.setFont(font);
+		return style;
+	}
+
+	private void createCell(XSSFWorkbook excelFile, Row row, int columnCount, Object value, CellStyle style)
 	{
 		XSSFSheet sheet = (XSSFSheet) row.getSheet();
 		Cell cell = row.createCell(columnCount);
@@ -89,6 +119,17 @@ public class ExcelManager
 		else if (value instanceof Date)
 		{
 			cell.setCellValue((Date) value);
+
+			CellStyle styleDate = createCalendarStyle(excelFile);
+			cell.setCellStyle(styleDate);
+		}
+		else if (value instanceof LocalDate)
+		{
+			cell.setCellValue(((LocalDate) value).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+		}
+		else if (value instanceof LocalDateTime)
+		{
+			cell.setCellValue(((LocalDateTime) value).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
 		}
 		else if (value instanceof Calendar)
 		{
@@ -102,74 +143,72 @@ public class ExcelManager
 			{
 				fixedValue = fixedValue.replaceAll("\r\n", "\n");
 			}
-				cell.setCellValue(sheet.getWorkbook().getCreationHelper().createRichTextString(fixedValue));
-			}
+			cell.setCellValue(sheet.getWorkbook().getCreationHelper().createRichTextString(fixedValue));
+		}
 
+		if (!(value instanceof Date))
+		{
 			cell.setCellStyle(style);
 		}
-
-		public XSSFWorkbook CriaPlanilhaCabecalho(XSSFWorkbook excelFile, String packageclasse, String nomeClasse)
-				throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException,
-				ClassNotFoundException
-		{
-			String nomeCompletoClasse = packageclasse + "." + nomeClasse;
-			Class MinhaClasse = Class.forName(nomeCompletoClasse);
-			Object meuObjeto = MinhaClasse.getConstructor().newInstance();
-
-			excelFile = createSheet(excelFile, nomeClasse.replace("DTO",""));
-			excelFile = writeHeaderLine(excelFile, meuObjeto.getClass());
-
-			return excelFile;
-		}
-
-		public XSSFWorkbook writeHeaderLine(XSSFWorkbook excelFile, Class classe)
-		{
-			String sheetName = classe.getSimpleName().replace("DTO", "");
-			Row row = excelFile.getSheet(sheetName).createRow(0);
-			CellStyle style = createHeaderStyle(excelFile);
-
-			int[] columnCount = new int[1];
-			columnCount[0] = 0;
-			Field[] atributos = classe.getDeclaredFields();
-			Arrays.stream(atributos).forEach(a ->
-			{
-				String header = HeaderEnum
-						.stream()
-						.filter(h -> h.name().equals(a.getName()))
-						.map(h -> h.getHeader())
-						.collect(Collectors.joining("\r\n"));
-
-				createCell(row, columnCount[0]++, header, style);
-			});
-
-			return excelFile;
-		}
-
-		public XSSFWorkbook writeDataLine(XSSFWorkbook excelFile, Object obj)
-		{
-			String sheetname = obj.getClass().getSimpleName().replace("DTO", "");
-
-			int rowIndex = excelFile.getSheet(sheetname).getLastRowNum();
-			Row row = excelFile.getSheet(sheetname).createRow(++rowIndex);
-
-			CellStyle style = createDataStyle(excelFile);
-
-			int[] columnCount = new int[1];
-			columnCount[0] = 0;
-			Field[] atributos = obj.getClass().getDeclaredFields();
-			Arrays.stream(atributos).forEach(a ->
-			{
-				try
-				{
-					a.setAccessible(true);
-					createCell(row, columnCount[0]++, a.get(obj), style);
-				}
-				catch (IllegalAccessException e)
-				{
-					throw new NegocioException("Acesso ilegal utilizando reflection!", e);
-				}
-			});
-
-			return excelFile;
-		}
 	}
+
+	public XSSFWorkbook CriaPlanilhaCabecalho(XSSFWorkbook excelFile, String packageclasse, String nomeClasse)
+			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException,
+			ClassNotFoundException
+	{
+		String nomeCompletoClasse = packageclasse + "." + nomeClasse;
+		Class MinhaClasse = Class.forName(nomeCompletoClasse);
+		Object meuObjeto = MinhaClasse.getConstructor().newInstance();
+
+		excelFile = createSheet(excelFile, nomeClasse.replace("DTO", ""));
+		excelFile = writeHeaderLine(excelFile, meuObjeto.getClass());
+
+		return excelFile;
+	}
+
+	public XSSFWorkbook writeHeaderLine(XSSFWorkbook excelFile, Class classe)
+	{
+		String sheetName = classe.getSimpleName().replace("DTO", "");
+		Row row = excelFile.getSheet(sheetName).createRow(0);
+		CellStyle style = createHeaderStyle(excelFile);
+
+		int[] columnCount = new int[1];
+		columnCount[0] = 0;
+		Field[] atributos = classe.getDeclaredFields();
+		Arrays.stream(atributos).forEach(a -> {
+			String header = HeaderEnum.stream().filter(h -> h.name().equals(a.getName())).map(h -> h.getHeader())
+					.collect(Collectors.joining("\r\n"));
+
+			createCell(excelFile, row, columnCount[0]++, header, style);
+		});
+
+		return excelFile;
+	}
+
+	public XSSFWorkbook writeDataLine(XSSFWorkbook excelFile, Object obj)
+	{
+		String sheetname = obj.getClass().getSimpleName().replace("DTO", "");
+
+		int rowIndex = excelFile.getSheet(sheetname).getLastRowNum();
+		Row row = excelFile.getSheet(sheetname).createRow(++rowIndex);
+
+		CellStyle style = createDataStyle(excelFile);
+
+		int[] columnCount = new int[1];
+		columnCount[0] = 0;
+		Field[] atributos = obj.getClass().getDeclaredFields();
+		Arrays.stream(atributos).forEach(a -> {
+			try
+			{
+				a.setAccessible(true);
+				createCell(excelFile, row, columnCount[0]++, a.get(obj), style);
+			}
+			catch (IllegalAccessException e)
+			{
+				throw new NegocioException("Acesso ilegal utilizando reflection!", e);
+			}
+		});
+
+		return excelFile;
+	}
+}

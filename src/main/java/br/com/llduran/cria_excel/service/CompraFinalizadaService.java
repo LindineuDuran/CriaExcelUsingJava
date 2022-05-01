@@ -12,14 +12,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+//@Service
 public class CompraFinalizadaService implements ObjectService
 {
-	@Autowired
 	private IoUtils ioUtils;
-
-	@Autowired
 	private ExcelManager excelManager;
+
+	public CompraFinalizadaService()
+	{
+		this.ioUtils = new IoUtils();
+		this.excelManager = new ExcelManager();
+	}
 
 	public XSSFWorkbook processaListaArquivos(XSSFWorkbook excelFile, List<File> arquivosCompra)
 			throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException,

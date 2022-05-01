@@ -2,6 +2,7 @@ package br.com.llduran.cria_excel.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,12 @@ import java.lang.reflect.InvocationTargetException;
 @Component
 public class ObjectManipulation
 {
-	@Autowired
 	private ModelMapper modelMapper;
+
+	public ObjectManipulation()
+	{
+		this.modelMapper = new ModelMapper();
+	}
 
 	public Object desserializa(String json, String packageName, String className)
 			throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException,
@@ -23,6 +28,7 @@ public class ObjectManipulation
 		Object meuobjeto = MinhaClasse.getConstructor().newInstance();
 
 		ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
 		Object objeto = (Object) mapper.readValue(json, meuobjeto.getClass());
 
 		return objeto;

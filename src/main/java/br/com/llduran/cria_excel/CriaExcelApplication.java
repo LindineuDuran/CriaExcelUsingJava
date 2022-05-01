@@ -1,10 +1,9 @@
 package br.com.llduran.cria_excel;
 
-import br.com.llduran.cria_excel.service.CompraFinalizadaService;
-import br.com.llduran.cria_excel.service.FilmeService;
-import br.com.llduran.cria_excel.service.PessoaService;
+import br.com.llduran.cria_excel.service.*;
 import br.com.llduran.cria_excel.util.ExcelManager;
 import br.com.llduran.cria_excel.util.IoUtils;
+import br.com.llduran.cria_excel.util.RegexUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,6 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @SpringBootApplication
@@ -25,13 +25,7 @@ public class CriaExcelApplication implements CommandLineRunner
 	private ExcelManager excelManager;
 
 	@Autowired
-	private CompraFinalizadaService compraFinalizadaService;
-
-	@Autowired
-	private FilmeService filmeService;
-
-	@Autowired
-	private PessoaService pessoaService;
+	private ServiceContext serviceContext;
 
 	public static void main(String[] args)
 	{
@@ -48,26 +42,30 @@ public class CriaExcelApplication implements CommandLineRunner
 		// Busca lista de arquivos JSON
 		List<File> arquivos = ioUtils.getFileListOf("json");
 
-		// Filtra arquivos de Compra
-		List<File> arquivosCompra = arquivos.stream().filter(a -> a.getName().contains("compra"))
-				.collect(Collectors.toList());
+		// Obtêm nomes dos arquivos
+		List<String> nomesArquivos = arquivos.stream().map(a -> a.getName()).collect(Collectors.toList());
 
-		// Processa arquivos de Compras Finalizadas
-		excelFiles[0] = compraFinalizadaService.processaListaArquivos(excelFiles[0], arquivosCompra);
+		// Get the Stream from the List matching Pattern
+		List<String> tipos = RegexUtils.getStream(nomesArquivos);
 
-		// Filtra arquivos de Filme
-		List<File> arquivosFilme = arquivos.stream().filter(a -> a.getName().contains("filme"))
-				.collect(Collectors.toList());
+		for (String tipo:tipos)
+		{
+			// Filtra arquivos por tipo
+			List<File> arquivosTipo = arquivos.stream().filter(a -> a.getName().contains(tipo)).collect(Collectors.toList());
 
-		// Processa arquivos de filmes
-		excelFiles[0] = filmeService.processaListaArquivos(excelFiles[0], arquivosFilme);
+			String nomeClasse = RegexUtils.upperCaseFirst(tipo);
+			nomeClasse = nomeClasse.equals("Compra") ? "CompraFinalizadaService" : nomeClasse+"Service";
+			serviceContext.setObjectService("br.com.llduran.cria_excel.service", nomeClasse);
 
-		// Filtra arquivos de Pessoa
-		List<File> arquivosPessoa = arquivos.stream().filter(a -> a.getName().contains("pessoa"))
-				.collect(Collectors.toList());
+			// Processa arquivos do tipo
+			excelFiles[0] = serviceContext.processaListaArquivos(excelFiles[0], arquivosTipo);
+		}
 
-		// Processa arquivos de pessoa
-		excelFiles[0] = pessoaService.processaListaArquivos(excelFiles[0], arquivosPessoa);
+		// Se não tiver planilhas no arquivo
+		if(!excelManager.hasSheets (excelFiles[0]))
+		{
+			excelManager.createSheet(excelFiles[0], "Planilha1") ;
+		}
 
 		// Salva arquivo Excel
 		ioUtils.salvaExcelLocal(excelFiles[0], "ExcelTeste.xlsx");

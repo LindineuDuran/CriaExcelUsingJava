@@ -15,11 +15,14 @@ import java.util.List;
 @Service
 public class FilmeService implements ObjectService
 {
-	@Autowired
 	private IoUtils ioUtils;
-
-	@Autowired
 	private ExcelManager excelManager;
+
+	public FilmeService()
+	{
+		this.ioUtils = new IoUtils();
+		this.excelManager = new ExcelManager();
+	}
 
 	public XSSFWorkbook processaListaArquivos(XSSFWorkbook excelFile, List<File> arquivosFilme)
 			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException,

@@ -1,10 +1,10 @@
 package br.com.llduran.cria_excel.service;
 
+import br.com.llduran.cria_excel.model.Pedido;
 import br.com.llduran.cria_excel.model.Pessoa;
 import br.com.llduran.cria_excel.util.ExcelManager;
 import br.com.llduran.cria_excel.util.IoUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PessoaService implements ObjectService
+public class PedidoService implements ObjectService
 {
 	private IoUtils ioUtils;
 	private ExcelManager excelManager;
 
-	public PessoaService()
+	public PedidoService()
 	{
 		this.ioUtils = new IoUtils();
 		this.excelManager = new ExcelManager();
@@ -33,22 +33,22 @@ public class PessoaService implements ObjectService
 		excelFiles[0] = excelFile;
 
 		// Transforma arquivos JSON em objetos Filme
-		List<Pessoa> pessoas = new ArrayList<>();
+		List<Pedido> pedidos = new ArrayList<>();
 		arquivosPessoa.forEach(a -> {
-			Pessoa pessoa = (Pessoa) ioUtils.leArquivosJson(a.getAbsolutePath(),
+			Pedido pedido = (Pedido) ioUtils.leArquivosJson(a.getAbsolutePath(),
 												"br.com.llduran.cria_excel.model",
-												 "Pessoa",
+												 "Pedido",
 												    false);
-			pessoas.add(pessoa);
+			pedidos.add(pedido);
 		});
 
-		// Cria planilha Excel com linha de cabeçalho para Filme
+		// Cria planilha Excel com linha de cabeçalho para Pedido
 		excelFiles[0] = excelManager.CriaPlanilhaCabecalho(excelFiles[0],
 												"br.com.llduran.cria_excel.model",
-												 "Pessoa");
+												 "Pedido");
 
-		// Consome dados da lista de Pessoa
-		pessoas.forEach(c -> {
+		// Consome dados da lista de Pedido
+		pedidos.forEach(c -> {
 			// Insere linha na planilha à partir de dados do JSON lido
 			excelFiles[0] = excelManager.writeDataLine(excelFiles[0], c);
 		});
