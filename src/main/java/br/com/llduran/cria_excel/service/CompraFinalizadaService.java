@@ -1,11 +1,9 @@
 package br.com.llduran.cria_excel.service;
 
 import br.com.llduran.cria_excel.model.CompraFinalizadaDTO;
-import br.com.llduran.cria_excel.util.ExcelManager;
+import br.com.llduran.cria_excel.util.excel.ExcelManager;
 import br.com.llduran.cria_excel.util.IoUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;

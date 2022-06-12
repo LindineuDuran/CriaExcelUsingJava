@@ -1,12 +1,9 @@
-package br.com.llduran.cria_excel.util;
+package br.com.llduran.cria_excel.util.excel;
 
 import br.com.llduran.cria_excel.exception.NegocioException;
 import br.com.llduran.cria_excel.model.HeaderEnum;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheet;
@@ -14,19 +11,18 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component public class ExcelManager
 {
+	private ObjectValueContext objectValueContext;
+
+	public ExcelManager()
+	{
+		objectValueContext = new ObjectValueContext();
+	}
+
 	public XSSFWorkbook createExcelFile()
 	{
 		XSSFWorkbook excelFile = new XSSFWorkbook();
@@ -71,85 +67,38 @@ import java.util.stream.Collectors;
 		return excelFile.getCTWorkbook().getSheets().getSheetList();
 	}
 
-	private CellStyle createHeaderStyle(XSSFWorkbook excelFile)
-	{
-		CellStyle style = excelFile.createCellStyle();
-		XSSFFont font = excelFile.createFont();
-		font.setBold(true);
-		font.setFontHeight(12);
-		style.setFont(font);
-		return style;
-	}
-
-	private CellStyle createDataStyle(XSSFWorkbook excelFile)
-	{
-		CellStyle style = excelFile.createCellStyle();
-		XSSFFont font = excelFile.createFont();
-		font.setFontHeight(10);
-		style.setFont(font);
-
-		return style;
-	}
-
-	private CellStyle createCalendarStyle(XSSFWorkbook excelFile)
-	{
-		CellStyle style = excelFile.createCellStyle();
-		CreationHelper createHelper = excelFile.getCreationHelper();
-		XSSFFont font = excelFile.createFont();
-		font.setFontHeight(10);
-		style.setDataFormat(createHelper.createDataFormat().getFormat("dd/mm/yyyy"));
-		style.setFont(font);
-		return style;
-	}
-
-	private void createCell(XSSFWorkbook excelFile, Row row, int columnCount, Object value, CellStyle style)
+	private void createCell(XSSFWorkbook excelFile, Row row, int columnCount, Object value, String tipoLinha)
 	{
 		XSSFSheet sheet = (XSSFSheet) row.getSheet();
 		Cell cell = row.createCell(columnCount);
 
-		if (value == null || value.toString().trim() == "NULL" || value.toString().trim() == "null")
-		{
-			cell.setCellValue(sheet.getWorkbook().getCreationHelper().createRichTextString(""));
-		}
-		else if (value instanceof BigDecimal)
-		{
-			DecimalFormat df = new DecimalFormat("####.##");
-			cell.setCellValue(((BigDecimal) value).doubleValue());
-		}
-		else if (value instanceof Date)
-		{
-			cell.setCellValue((Date) value);
-
-			CellStyle styleDate = createCalendarStyle(excelFile);
-			cell.setCellStyle(styleDate);
-		}
-		else if (value instanceof LocalDate)
-		{
-			cell.setCellValue(((LocalDate) value).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-		}
-		else if (value instanceof LocalDateTime)
-		{
-			cell.setCellValue(((LocalDateTime) value).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
-		}
-		else if (value instanceof Calendar)
-		{
-			cell.setCellValue((Calendar) value);
-		}
-		else
-		{
-			// fixing possible CR/LF problem
-			String fixedValue = value.toString();
-			if (fixedValue != null)
+			String typeName = value.getClass().getTypeName();
+			if(tipoLinha.equals("Header")) { typeName = tipoLinha;}
+			try
 			{
-				fixedValue = fixedValue.replaceAll("\r\n", "\n");
+				objectValueContext.setObjectValue(typeName);
+				cell = objectValueContext.processValue(excelFile, cell, value);
 			}
-			cell.setCellValue(sheet.getWorkbook().getCreationHelper().createRichTextString(fixedValue));
-		}
-
-		if (!(value instanceof Date))
-		{
-			cell.setCellStyle(style);
-		}
+			catch (ClassNotFoundException e)
+			{
+				throw new RuntimeException(e);
+			}
+			catch (NoSuchMethodException e)
+			{
+				throw new RuntimeException(e);
+			}
+			catch (InvocationTargetException e)
+			{
+				throw new RuntimeException(e);
+			}
+			catch (InstantiationException e)
+			{
+				throw new RuntimeException(e);
+			}
+			catch (IllegalAccessException e)
+			{
+				throw new RuntimeException(e);
+			}
 	}
 
 	public XSSFWorkbook CriaPlanilhaCabecalho(XSSFWorkbook excelFile, String packageclasse, String nomeClasse)
@@ -170,17 +119,11 @@ import java.util.stream.Collectors;
 	{
 		String sheetName = classe.getSimpleName().replace("DTO", "");
 		Row row = excelFile.getSheet(sheetName).createRow(0);
-		CellStyle style = createHeaderStyle(excelFile);
 
 		int[] columnCount = new int[1];
 		columnCount[0] = 0;
 		Field[] atributos = classe.getDeclaredFields();
-		Arrays.stream(atributos).forEach(a -> {
-			String header = HeaderEnum.stream().filter(h -> h.name().equals(a.getName())).map(h -> h.getHeader())
-					.collect(Collectors.joining("\r\n"));
-
-			createCell(excelFile, row, columnCount[0]++, header, style);
-		});
+		Arrays.stream(atributos).forEach(a -> createCell(excelFile, row, columnCount[0]++, HeaderEnum.getHeaderByName(a.getName()), "Header"));
 
 		return excelFile;
 	}
@@ -192,8 +135,6 @@ import java.util.stream.Collectors;
 		int rowIndex = excelFile.getSheet(sheetname).getLastRowNum();
 		Row row = excelFile.getSheet(sheetname).createRow(++rowIndex);
 
-		CellStyle style = createDataStyle(excelFile);
-
 		int[] columnCount = new int[1];
 		columnCount[0] = 0;
 		Field[] atributos = obj.getClass().getDeclaredFields();
@@ -201,7 +142,7 @@ import java.util.stream.Collectors;
 			try
 			{
 				a.setAccessible(true);
-				createCell(excelFile, row, columnCount[0]++, a.get(obj), style);
+				createCell(excelFile, row, columnCount[0]++, a.get(obj), "Data");
 			}
 			catch (IllegalAccessException e)
 			{

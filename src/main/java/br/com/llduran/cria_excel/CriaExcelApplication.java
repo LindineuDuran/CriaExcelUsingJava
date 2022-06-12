@@ -1,7 +1,8 @@
 package br.com.llduran.cria_excel;
 
+import br.com.llduran.cria_excel.model.ServiceEnum;
 import br.com.llduran.cria_excel.service.*;
-import br.com.llduran.cria_excel.util.ExcelManager;
+import br.com.llduran.cria_excel.util.excel.ExcelManager;
 import br.com.llduran.cria_excel.util.IoUtils;
 import br.com.llduran.cria_excel.util.RegexUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,7 +13,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @SpringBootApplication
@@ -53,8 +53,7 @@ public class CriaExcelApplication implements CommandLineRunner
 			// Filtra arquivos por tipo
 			List<File> arquivosTipo = arquivos.stream().filter(a -> a.getName().contains(tipo)).collect(Collectors.toList());
 
-			String nomeClasse = RegexUtils.upperCaseFirst(tipo);
-			nomeClasse = nomeClasse.equals("Compra") ? "CompraFinalizadaService" : nomeClasse+"Service";
+			String nomeClasse = ServiceEnum.getServiceByTipoOperacao(tipo);
 			serviceContext.setObjectService("br.com.llduran.cria_excel.service", nomeClasse);
 
 			// Processa arquivos do tipo

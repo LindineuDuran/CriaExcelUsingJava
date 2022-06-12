@@ -6,8 +6,6 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.Date;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -23,7 +21,7 @@ public class Pedido
 	private BigDecimal subtotal;
 
 	@JsonProperty("taxa_frete")
-	private BigDecimal taxaFrete;
+	private Double taxaFrete;
 
 	@JsonProperty("valor_total")
 	private BigDecimal valorTotal;

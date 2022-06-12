@@ -1,8 +1,7 @@
 package br.com.llduran.cria_excel.service;
 
 import br.com.llduran.cria_excel.model.Pedido;
-import br.com.llduran.cria_excel.model.Pessoa;
-import br.com.llduran.cria_excel.util.ExcelManager;
+import br.com.llduran.cria_excel.util.excel.ExcelManager;
 import br.com.llduran.cria_excel.util.IoUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
