@@ -1,8 +1,6 @@
 package br.com.llduran.cria_excel.util;
 
-import java.io.File;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -23,12 +21,5 @@ public class RegexUtils
 				             .collect(Collectors.toList());
 
 		return tipos;
-	}
-
-	public static String upperCaseFirst(String val)
-	{
-		char[] arr = val.toCharArray();
-		arr[0] = Character.toUpperCase(arr[0]);
-		return new String(arr);
 	}
 }

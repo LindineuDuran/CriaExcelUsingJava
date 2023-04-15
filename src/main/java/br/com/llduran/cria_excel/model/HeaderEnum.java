@@ -1,12 +1,7 @@
 package br.com.llduran.cria_excel.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import org.apache.poi.ss.usermodel.Header;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 @Getter
@@ -31,8 +26,8 @@ public enum HeaderEnum
 	taxaFrete("Taxa de Frete"),
 	valorTotal("Valor Total"),
 	status("Status"),
-	dataCriacao("Data de Criacao"),
-	dataConfirmacao("Data de Confirmacao"),
+	dataCriacao("Data de Criação"),
+	dataConfirmacao("Data de Confirmação"),
 	dataCancelamento("Data de Cancelamento"),
 	dataEntrega("Data de Entrega"),
 	primeiroNome("Primeiro Nome"),

@@ -1,12 +1,8 @@
 package br.com.llduran.cria_excel.config;
 
-import br.com.llduran.cria_excel.model.CompraFinalizada;
-import br.com.llduran.cria_excel.model.CompraFinalizadaDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.time.LocalDate;
 
 @Configuration
 public class ModelMapperConfig

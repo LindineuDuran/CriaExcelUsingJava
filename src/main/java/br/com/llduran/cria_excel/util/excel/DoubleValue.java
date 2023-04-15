@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class DoubleValue implements ObjectValue

@@ -3,7 +3,6 @@ package br.com.llduran.cria_excel.util;
 import br.com.llduran.cria_excel.exception.NegocioException;
 import lombok.Data;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
