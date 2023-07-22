@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ObjectService
 {
-	public XSSFWorkbook processaListaArquivos(XSSFWorkbook excelFile, List<File> arquivosCompra)
+	public XSSFWorkbook processaListaArquivos(XSSFWorkbook excelFile, List<File> arquivosTipo)
 			throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException,
 			IllegalAccessException;
 }

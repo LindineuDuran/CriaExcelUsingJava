@@ -1,10 +1,10 @@
 package br.com.llduran.cria_excel;
 
 import br.com.llduran.cria_excel.model.ServiceEnum;
-import br.com.llduran.cria_excel.service.*;
-import br.com.llduran.cria_excel.util.excel.ExcelManager;
-import br.com.llduran.cria_excel.util.IoUtils;
-import br.com.llduran.cria_excel.util.RegexUtils;
+import br.com.llduran.cria_excel.service.ExcelManagerService;
+import br.com.llduran.cria_excel.service.IoUtilsService;
+import br.com.llduran.cria_excel.service.RegexUtilsService;
+import br.com.llduran.cria_excel.service.ServiceContext;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,16 +13,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class CriaExcelApplication implements CommandLineRunner
 {
-	@Autowired
-	private IoUtils ioUtils;
 
 	@Autowired
-	private ExcelManager excelManager;
+	private IoUtilsService ioUtils;
+
+	@Autowired
+	private ExcelManagerService excelManager;
+
+	@Autowired
+	private RegexUtilsService regexUtils;
 
 	@Autowired
 	private ServiceContext serviceContext;
@@ -39,19 +42,19 @@ public class CriaExcelApplication implements CommandLineRunner
 		XSSFWorkbook[] excelFiles = new XSSFWorkbook[1];
 		excelFiles[0] = excelManager.createExcelFile();
 
-		// Busca lista de arquivos JSON
+		// Obtêm lista de arquivos JSON
 		List<File> arquivos = ioUtils.getFileListOf("json");
 
 		// Obtêm nomes dos arquivos
-		List<String> nomesArquivos = arquivos.stream().map(a -> a.getName()).collect(Collectors.toList());
+		List<String> nomesArquivos = ioUtils.obtemNomesArquicos(arquivos);
 
 		// Get the Stream from the List matching Pattern
-		List<String> tipos = RegexUtils.getStream(nomesArquivos);
+		List<String> tipos = regexUtils.getStream(nomesArquivos);
 
 		for (String tipo:tipos)
 		{
 			// Filtra arquivos por tipo
-			List<File> arquivosTipo = arquivos.stream().filter(a -> a.getName().contains(tipo)).collect(Collectors.toList());
+			List<File> arquivosTipo = ioUtils.filtraArquivosPorTipo(arquivos, tipo);
 
 			String nomeClasse = ServiceEnum.getServiceByTipoOperacao(tipo);
 			serviceContext.setObjectService("br.com.llduran.cria_excel.service", nomeClasse);

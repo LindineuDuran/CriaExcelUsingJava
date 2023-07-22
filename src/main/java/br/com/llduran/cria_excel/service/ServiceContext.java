@@ -2,7 +2,6 @@ package br.com.llduran.cria_excel.service;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -24,10 +23,10 @@ public class ServiceContext
 	}
 
 	// use the strategy
-	public XSSFWorkbook processaListaArquivos(XSSFWorkbook excelFile, List<File> arquivosCompra)
+	public XSSFWorkbook processaListaArquivos(XSSFWorkbook excelFile, List<File> arquivosTipo)
 			throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException,
 			IllegalAccessException
 	{
-		return this.service.processaListaArquivos(excelFile, arquivosCompra);
+		return this.service.processaListaArquivos(excelFile, arquivosTipo);
 	}
 }

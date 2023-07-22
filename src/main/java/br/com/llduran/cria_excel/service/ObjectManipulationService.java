@@ -1,19 +1,20 @@
-package br.com.llduran.cria_excel.util;
+package br.com.llduran.cria_excel.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 
 @Component
-public class ObjectManipulation
+public class ObjectManipulationService
 {
 	private ModelMapper modelMapper;
 
-	public ObjectManipulation()
+	public ObjectManipulationService()
 	{
 		this.modelMapper = new ModelMapper();
 	}

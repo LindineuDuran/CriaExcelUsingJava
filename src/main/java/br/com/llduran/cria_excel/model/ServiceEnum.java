@@ -18,6 +18,7 @@ public enum ServiceEnum
 	{
 		return tipooperacao;
 	}
+
 	public static String getServiceByTipoOperacao(String tipoOperacao)
 	{
 		return Stream.of (ServiceEnum.values())

@@ -1,5 +1,6 @@
 package br.com.llduran.cria_excel.util.excel;
 
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -25,11 +26,10 @@ public class LocalDateTimeValue implements ObjectValue
 	{
 		CellStyle style = excelFile.createCellStyle();
 		XSSFFont font = excelFile.createFont();
+		font.setBold(true);
 		font.setFontHeight(10);
+		font.setColor(HSSFColor.VIOLET.index);
 		style.setFont(font);
-
-		CreationHelper createHelper = excelFile.getCreationHelper();
-		style.setDataFormat(createHelper.createDataFormat().getFormat("dd/MM/yyyy HH:mm:ss"));
 
 		return style;
 	}

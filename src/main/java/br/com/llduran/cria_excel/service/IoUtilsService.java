@@ -1,8 +1,8 @@
-package br.com.llduran.cria_excel.util;
+package br.com.llduran.cria_excel.service;
 
 import br.com.llduran.cria_excel.exception.NegocioException;
-import lombok.Data;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
 @Component
-public class IoUtils
+public class IoUtilsService
 {
 	@Value("${llduran.storage.source-folder}")
 	private String sourceFolder;
@@ -30,11 +29,12 @@ public class IoUtils
 	@Value("${llduran.storage.target-folder}")
 	private String targetFolder;
 
-	private ObjectManipulation objectManipulation;
+	@Autowired
+	private ObjectManipulationService objectManipulation;
 
-	public IoUtils()
+	public IoUtilsService()
 	{
-		this.objectManipulation = new ObjectManipulation();
+		this.objectManipulation = new ObjectManipulationService();
 	}
 
 	public String getSourceFolder()
@@ -66,11 +66,28 @@ public class IoUtils
 		String nomeDiretorio = getSourceFolder();
 		File file = new File(nomeDiretorio);
 
+		// Filtra lista de arquivos JSON
 		List<File> arquivos = Arrays.stream(file.listFiles())
-				                    .filter(f -> f.getName().contains(extensao))
-				                    .collect(Collectors.toList());
+				.filter(f -> f.getName().contains(extensao))
+				.collect(Collectors.toList());
 
 		return arquivos;
+	}
+
+	public List<String> obtemNomesArquicos(List<File> arquivos)
+	{
+		// Obtêm nomes dos arquivos
+		List<String> nomesArquivos = arquivos.stream().map(a -> a.getName()).collect(Collectors.toList());
+
+		return nomesArquivos;
+	}
+
+	public List<File> filtraArquivosPorTipo(List<File> arquivos, String tipo)
+	{
+		// Filtra arquivos por tipo
+		List<File> arquivosTipo = arquivos.stream().filter(a -> a.getName().contains(tipo)).collect(Collectors.toList());
+
+		return arquivosTipo;
 	}
 
 	public String readFile(String filePath) throws IOException

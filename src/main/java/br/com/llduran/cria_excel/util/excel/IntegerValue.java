@@ -2,11 +2,8 @@ package br.com.llduran.cria_excel.util.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.text.DecimalFormat;
 
 public class IntegerValue implements ObjectValue
 {

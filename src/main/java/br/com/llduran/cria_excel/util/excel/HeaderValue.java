@@ -1,7 +1,10 @@
 package br.com.llduran.cria_excel.util.excel;
 
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -23,7 +26,10 @@ public class HeaderValue implements ObjectValue
 		XSSFFont font = excelFile.createFont();
 		font.setBold(true);
 		font.setFontHeight(12);
+		font.setColor(HSSFColor.WHITE.index);
 		style.setFont(font);
+		style.setFillForegroundColor(IndexedColors.DARK_BLUE.index);
+		style.setFillPattern(CellStyle.SOLID_FOREGROUND);
 
 		return style;
 	}
